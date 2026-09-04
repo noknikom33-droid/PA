@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>แผงควบคุมแอดมิน - PA ครู</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="admin-body">
+  <!-- Login Screen -->
+  <div id="loginScreen" class="login-screen">
+    <div class="login-card">
+      <div class="login-icon">🔐</div>
+      <h2>เข้าสู่ระบบแอดมิน</h2>
+      <form id="loginForm">
+        <div class="form-group">
+          <label>ชื่อผู้ใช้</label>
+          <input type="text" id="username" class="form-control" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label>รหัสผ่าน</label>
+          <input type="password" id="password" class="form-control" required autocomplete="current-password">
+        </div>
+        <div class="form-check">
+          <input type="checkbox" id="rememberMe">
+          <label for="rememberMe">จำฉันไว้</label>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">เข้าสู่ระบบ</button>
+        <p id="loginError" class="login-error"></p>
+      </form>
+      <a href="index.html" class="back-link">← กลับหน้าหลัก</a>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard -->
+  <div id="adminApp" class="admin-app hidden">
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <h3>แผงควบคุม</h3>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-page="dashboard">📊 ภาพรวม</button>
+        <button class="nav-item" data-page="teachers">👨‍🏫 จัดการครู</button>
+        <button class="nav-item" data-page="reports">📝 จัดการรายงาน</button>
+        <button class="nav-item" data-page="files">📁 ไฟล์แนบ</button>
+        <button class="nav-item" data-page="admins">👤 ผู้ดูแลระบบ</button>
+        <button class="nav-item" data-page="logs">📋 ประวัติ</button>
+      </nav>
+      <div class="sidebar-footer">
+        <span id="adminName">Admin</span>
+        <button id="logoutBtn" class="btn btn-sm btn-outline">ออกจากระบบ</button>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+      <!-- Dashboard -->
+      <section id="dashboardPage" class="admin-page active">
+        <h2>ภาพรวมระบบ</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-number" id="totalTeachers">0</span>
+            <span class="stat-label">ครูทั้งหมด</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number" id="avgProgress">0%</span>
+            <span class="stat-label">ความคืบหน้าเฉลี่ย</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number" id="totalFiles">0</span>
+            <span class="stat-label">ไฟล์แนบ</span>
+          </div>
+        </div>
+        <canvas id="dashboardChart" width="600" height="300"></canvas>
+      </section>
+
+      <!-- Teachers -->
+      <section id="teachersPage" class="admin-page">
+        <div class="page-header">
+          <h2>จัดการข้อมูลครู</h2>
+          <button class="btn btn-primary" onclick="openTeacherModal()">+ เพิ่มครู</button>
+        </div>
+        <div class="search-box">
+          <input type="text" id="teacherSearch" class="form-control" placeholder="ค้นหาชื่อครู...">
+        </div>
+        <div id="teachersTable" class="data-table"></div>
+      </section>
+
+      <!-- Reports -->
+      <section id="reportsPage" class="admin-page">
+        <h2>จัดการรายงานตัวชี้วัด</h2>
+        <div class="form-row">
+          <div class="form-group">
+            <label>เลือกครู</label>
+            <select id="adminTeacherSelect" class="form-control"></select>
+          </div>
+          <div class="form-group">
+            <label>ปีงบประมาณ</label>
+            <select id="adminYearSelect" class="form-control"></select>
+          </div>
+          <div class="form-group">
+            <label>รอบ</label>
+            <select id="adminRoundSelect" class="form-control">
+              <option value="1">รอบที่ 1</option>
+              <option value="2">รอบที่ 2</option>
+            </select>
+          </div>
+        </div>
+        <div id="adminIndicatorsList"></div>
+      </section>
+
+      <!-- Files -->
+      <section id="filesPage" class="admin-page">
+        <h2>จัดการไฟล์แนบ</h2>
+        <div class="drop-zone" id="dropZone">
+          <p>ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือก</p>
+          <input type="file" id="fileInput" multiple accept="image/*,application/pdf">
+        </div>
+        <div id="filePreview" class="file-preview"></div>
+        <div id="filesTable" class="data-table"></div>
+      </section>
+
+      <!-- Admins -->
+      <section id="adminsPage" class="admin-page">
+        <h2>จัดการผู้ดูแลระบบ</h2>
+        <div id="adminsTable" class="data-table"></div>
+      </section>
+
+      <!-- Logs -->
+      <section id="logsPage" class="admin-page">
+        <h2>ประวัติการแก้ไข</h2>
+        <div id="logsTable" class="data-table"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Teacher Modal -->
+  <div id="teacherModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeTeacherModal()">&times;</span>
+      <h3 id="teacherModalTitle">เพิ่มข้อมูลครู</h3>
+      <form id="teacherForm">
+        <input type="hidden" id="editTeacherId">
+        <div class="form-row">
+          <div class="form-group">
+            <label>คำนำหน้า</label>
+            <input type="text" id="teacherPrefix" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>ชื่อ-สกุล</label>
+            <input type="text" id="teacherFullName" class="form-control" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>ตำแหน่ง</label>
+            <input type="text" id="teacherPosition" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>วิทยฐานะ</label>
+            <input type="text" id="teacherStatus" class="form-control">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>กลุ่มสาระ/วิชา</label>
+            <input type="text" id="teacherSubject" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>โรงเรียน</label>
+            <input type="text" id="teacherSchool" class="form-control">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>รูปโปรไฟล์ (URL หรืออัปโหลด)</label>
+          <input type="file" id="teacherPhotoFile" class="form-control" accept="image/*">
+          <input type="hidden" id="teacherPhotoUrl">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">บันทึก</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

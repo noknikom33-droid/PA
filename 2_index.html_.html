@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ระบบรายงาน PA ครู</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Login Admin Button -->
+  <a href="admin.html" class="admin-login-btn" title="เข้าสู่ระบบแอดมิน">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+    </svg>
+  </a>
+
+  <!-- Theme Toggle -->
+  <button id="themeToggle" class="theme-toggle" aria-label="สลับธีม">
+    <span id="themeIcon">🌙</span>
+  </button>
+
+  <!-- App Container -->
+  <div id="app">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-content">
+        <h1>📊 ระบบรายงานผลการปฏิบัติงาน PA</h1>
+        <p class="subtitle">ข้อตกลงในการพัฒนางานตามหลักเกณฑ์ ว9/2564</p>
+      </div>
+    </header>
+
+    <!-- Teacher Selector -->
+    <section class="section-card">
+      <div class="form-group">
+        <label>เลือกครู</label>
+        <select id="teacherSelect" class="form-control">
+          <option value="">-- กำลังโหลดรายชื่อ --</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>ปีงบประมาณ</label>
+          <select id="yearSelect" class="form-control"></select>
+        </div>
+        <div class="form-group">
+          <label>รอบประเมิน</label>
+          <select id="roundSelect" class="form-control">
+            <option value="1">รอบที่ 1</option>
+            <option value="2">รอบที่ 2</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Profile Card -->
+    <section id="profileCard" class="profile-card skeleton">
+      <div class="profile-photo">
+        <img id="teacherPhoto" src="" alt="รูปครู">
+      </div>
+      <div class="profile-info">
+        <h2 id="teacherName">--</h2>
+        <p id="teacherPosition">--</p>
+        <p id="teacherSchool">--</p>
+        <span id="teacherStatus" class="badge">--</span>
+      </div>
+    </section>
+
+    <!-- Progress Overview -->
+    <section class="section-card">
+      <h3>ความคืบหน้าโดยรวม</h3>
+      <div class="progress-container">
+        <div class="radial-progress" id="overallProgress">
+          <span class="progress-value">0%</span>
+        </div>
+        <div class="progress-stats">
+          <div class="stat-item">
+            <span class="stat-label">องค์ประกอบ 1 (ตอนที่ 1)</span>
+            <div class="progress-bar"><div id="part1Bar" class="progress-fill"></div></div>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">องค์ประกอบ 1 (ตอนที่ 2)</span>
+            <div class="progress-bar"><div id="part2Bar" class="progress-fill"></div></div>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">องค์ประกอบ 3</span>
+            <div class="progress-bar"><div id="part3Bar" class="progress-fill"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="indicators">ตัวชี้วัด PA</button>
+      <button class="tab-btn" data-tab="challenge">ประเด็นท้าทาย</button>
+      <button class="tab-btn" data-tab="ethics">จรรยาบรรณ</button>
+      <button class="tab-btn" data-tab="summary">สรุปคะแนน</button>
+    </nav>
+
+    <!-- Indicators Tab -->
+    <section id="indicatorsTab" class="tab-content active">
+      <div id="indicatorsList" class="indicators-list">
+        <div class="skeleton-loader"></div>
+      </div>
+    </section>
+
+    <!-- Challenge Tab -->
+    <section id="challengeTab" class="tab-content">
+      <div class="section-card">
+        <h3>ประเด็นท้าทาย (20 คะแนน)</h3>
+        <div id="challengeContent"></div>
+      </div>
+    </section>
+
+    <!-- Ethics Tab -->
+    <section id="ethicsTab" class="tab-content">
+      <div class="section-card">
+        <h3>จรรยาบรรณวิชาชีพ (20 คะแนน / 10 ข้อ)</h3>
+        <div id="ethicsContent"></div>
+      </div>
+    </section>
+
+    <!-- Summary Tab -->
+    <section id="summaryTab" class="tab-content">
+      <div class="section-card">
+        <h3>สรุปคะแนนรวม</h3>
+        <canvas id="summaryChart" width="400" height="300"></canvas>
+        <div id="summaryTable" class="summary-table"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <span class="lightbox-close">&times;</span>
+    <img id="lightboxImg" src="" alt="Preview">
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="spinner"></div>
+    <p>กำลังโหลดข้อมูล...</p>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
